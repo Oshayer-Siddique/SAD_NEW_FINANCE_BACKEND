@@ -50,6 +50,19 @@ async function getallexpense(req, res) {
 }
 
 
+async function getallincome(req,res){
+  try{
+    const incomes = await Income.find();
+    res.json(incomes);
+
+  }
+  catch(err){
+    res.status(500).json({message:err.message});
+  }
+
+}
+
+
 async function getExpense(req, res, next) {
     try {
       const expense = await Expense.findById(req.params.id);
@@ -62,6 +75,24 @@ async function getExpense(req, res, next) {
       return res.status(500).json({ message: err.message });
     }
   }
+
+
+async function getIncome(req,res,next){
+  try{
+    const income = await Income.findById(req.params.id);
+    if(income == null){
+      return res.status(404).json({ message: 'Income not found' });
+
+    }
+    res.income = income;
+    next();
+
+  }catch(err){
+    return res.status(500).json({ message: err.message });
+
+
+  }
+}
 
 
 
@@ -86,10 +117,33 @@ async function TotalExpense(req,res){
 
 
 
+async function TotalIncome(req,res){
+  try{
+    const totalIncomes = await Income.aggregate([
+      {
+        $group:{_id:null, total : {$sum: "$amount"}}
+      }
+    ]);
+    const totalIncomeAmount = totalIncomes.length > 0 ? totalIncomes[0].total: 0;
+    res.json({totalIncomes : totalIncomeAmount});
+
+  }
+  catch(err){
+    res.status(500).json({ message: err.message });
+
+  }
+
+}
+
+
+
 module.exports = {
   expensecreate,
   getallexpense,
   getExpense,
   TotalExpense,
   incomecreate,
+  getallincome,
+  getIncome,
+  TotalIncome,
 };

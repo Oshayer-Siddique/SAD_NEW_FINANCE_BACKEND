@@ -3,9 +3,13 @@ const path = require('path');
 const router = express.Router();
 
 const{expensecreate,getallexpense,getExpense,TotalExpense,
-    incomecreate
+    incomecreate,getallincome,getIncome,TotalIncome
 } = require('./IncomeExpenseController');
+
+
+
 const Expense = require('./ExpenseModel');
+const Income = require('./IncomeModel');
 
 
 router.post('/crtexpense',expensecreate);
@@ -14,9 +18,18 @@ router.post('/crtincome',incomecreate);
 
 router.get('/getallexpense',getallexpense);
 
+router.get('/getallincome',getallincome);
+
 router.get('/expenses/:id', getExpense, (req, res) => {
 
     res.json(res.expense);
+
+});
+
+
+router.get('/incomes/:id', getIncome, (req, res) => {
+
+  res.json(res.income);
 
 });
 
@@ -46,6 +59,39 @@ router.patch('/updtexpenses/:id', getExpense, async (req, res) => {
 
 
 
+
+
+  router.patch('/updtincome/:id',getIncome,async (req,res) => {
+    if(req.body.date != null){
+      res.income.date = req.body.date;
+
+    }
+    if(req.body.amount != null){
+      res.income.amount = req.body.amount;
+      
+    }
+    if(req.body.date != null){
+      res.income.category = req.body.category;
+      
+    }
+    if(req.body.date != null){
+      res.income.description = req.body.description;
+      
+    }
+
+    try{
+      const UpdatedIncome = await res.income.save();
+      res.json(UpdatedIncome);
+
+    }
+    catch(err){
+      res.status(400).json({ message: err.message });
+
+    }
+  })
+
+
+
   router.delete('/dltexpenses/:id', getExpense, async (req, res) => {
     try {
       await Expense.deleteOne({_id:req.params.id})
@@ -57,7 +103,20 @@ router.patch('/updtexpenses/:id', getExpense, async (req, res) => {
   });
 
 
+  router.delete('/dltincome/:id', getIncome, async (req, res) => {
+    try {
+      await Income.deleteOne({_id:req.params.id})
+      res.json({ message: 'Income deleted' });
+        
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+
   router.get('/totalexpense',TotalExpense);
+
+  router.get('/totalincome',TotalIncome);
   
   
 
