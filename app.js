@@ -56,12 +56,15 @@ app.get('/',(req,res)=>{
 const SaleRouter = require('./SALES/salesRouter');
 const IncomeExpenseRouter = require('./EXPENSE_INCOME_TRACKER/IncomeExpenseRouter');
 const TransactionRouter = require('./EXPENSE_INCOME_TRACKER/Transactions');
+const FinanceRouter = require('./Finance/financeRouter');
 
 
 
 app.use('/sales',SaleRouter);
 app.use('/tracking',IncomeExpenseRouter);
 app.use('/transaction',TransactionRouter);
+app.use('/finance',FinanceRouter);
+
 
 
 

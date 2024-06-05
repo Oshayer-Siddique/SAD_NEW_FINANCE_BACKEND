@@ -30,8 +30,8 @@ async function expensecreate(req, res) {
 
 async function incomecreate(req, res) {
     try {
-      const { date, amount, category, description } = req.body;
-      const income = new Income({ date, amount, category, description });
+      const { title ,date, amount, category, description } = req.body;
+      const income = new Income({ title ,date, amount, category, description });
       await income.save();
       res.status(201).json(income);
     } catch (err) {
