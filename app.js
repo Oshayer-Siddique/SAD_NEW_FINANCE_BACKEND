@@ -9,6 +9,8 @@ const fs = require('fs');
 const app = express();
 const csv = require('csv-parser');
 const { on } = require("events");
+const { exec } = require('child_process');
+
 
 dotenv.config();
 
@@ -67,7 +69,22 @@ app.use('/finance',FinanceRouter);
 
 
 
+app.get('/forecast', (req, res) => {
+  exec('python revenue.py', (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing Python script: ${error}`);
+      return res.status(500).send('Server Error');
+    }
 
+    try {
+      const forecastData = JSON.parse(stdout);
+      res.json(forecastData);
+    } catch (err) {
+      console.error(`Error parsing JSON: ${err}`);
+      res.status(500).send('Server Error');
+    }
+  });
+});
 
 
 

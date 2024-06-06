@@ -17,8 +17,8 @@ const Income = require("./IncomeModel");
 
 async function expensecreate(req, res) {
   try {
-    const { date, amount, category, description } = req.body;
-    const expense = new Expense({ date, amount, category, description });
+    const { title ,date, amount, category, description } = req.body;
+    const expense = new Expense({ title ,date, amount, category, description });
     await expense.save();
     res.status(201).json(expense);
   } catch (err) {

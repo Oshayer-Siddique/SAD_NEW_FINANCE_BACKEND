@@ -4,6 +4,7 @@ const path = require('path');
 const router = express.Router();
 
 
+
 const {readSalesData,readData,getTopSellingProductsRevenue,calculateTotalSales,getSalesByTimePeriod,calculateRevenueByDay,getTopSellingProductsUnits} = require('../SALES/salesController');
 
 const filePath = path.resolve(__dirname,'../DATASETS/sales.csv');
@@ -137,6 +138,9 @@ router.get('/revenue-by-day', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+
+
 
 
 

@@ -117,7 +117,27 @@ router.patch('/updtexpenses/:id', getExpense, async (req, res) => {
   router.get('/totalexpense',TotalExpense);
 
   router.get('/totalincome',TotalIncome);
-  
+
+
+   
+  router.get('/total-by-category', async (req, res) => {
+    try {
+        const results = await Income.aggregate([
+            {
+                $group: {
+                    _id: "$category",
+                    totalAmount: { $sum: "$amount" }
+                }
+            }
+        ]);
+
+        res.json(results);
+    } catch (err) {
+        console.error('Error fetching total by category', err);
+        res.status(500).send('Server Error');
+    }
+});
+
   
 
 
