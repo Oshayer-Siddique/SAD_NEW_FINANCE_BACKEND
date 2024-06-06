@@ -47,6 +47,104 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 
+// Define User schema
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+  
+    
+  },
+  password: {
+    type: String,
+    
+  },
+});
+
+const User = mongoose.model('User', userSchema);
+
+
+app.post('/register', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate email and password
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    // Check if the email is already registered
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email is already registered' });
+    }
+
+    // Create a new user object
+    const newUser = new User({ email, password });
+
+    // Save the user to the database
+    await newUser.save();
+
+    // Respond with the newly created user
+    res.status(201).json({ message: 'User registered successfully', user: newUser });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+app.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Check if the password is correct
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Respond with a success message
+    res.status(200).json({ message: 'Login successful', user });
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
+
+const storage = multer.diskStorage({
+  destination: function (req, file, callback) {
+      callback(null, __dirname + "/DATASETS");
+  },
+  filename: function (req, file, callback) {
+      callback(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+app.post("/upload", upload.single("file"), async (req, res) => {
+  try {
+      let document = req.file; // Access the uploaded file details from the request object
+
+      // Do something with the uploaded file, such as saving it to a database or processing it
+
+      res.status(200).send({ message: "File Upload OK", file: document }); // Send response indicating successful file upload along with file details
+  } catch (error) {
+      res.status(500).send({ message: "Error uploading file", error: error.message }); // Send error response if an error occurs during file upload
+  }
+});
+
+
+
 
 app.get('/',(req,res)=>{
     res.send("Is IT OKK::??");
